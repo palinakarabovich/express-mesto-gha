@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 
 app.use('/users', routerUsers);
 app.use('/cards', routerCards);
-app.get('*', (req, res) => {
+app.patch('*', (req, res) => {
   res.status(404).send({ message: 'URL  не сущетсвует' });
 });
 
