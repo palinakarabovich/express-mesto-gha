@@ -42,7 +42,7 @@ const getUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Пользователь по указанному _id не найден' });
+        res.status(400).send({ message: 'Переданы некорректные данные для поиска пользователя' });
       }
       res.status(500).send({ message: `Произошла ошибка ${err.name}` });
     });
