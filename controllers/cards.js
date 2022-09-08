@@ -47,7 +47,7 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (card === null) {
-        res.status(400).send({ message: 'Карточка с указанным _id не найдена' });
+        res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
       } else {
         const {
           likes,
@@ -64,7 +64,12 @@ const deleteCard = (req, res) => {
         });
       }
     })
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err.name}` }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки' });
+      }
+      res.status(500).send({ message: `Произошла ошибка ${err.name}` });
+    });
 };
 
 const likeCard = (req, res) => {
@@ -121,6 +126,8 @@ const dislikeCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные для удаления лайка' });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
       } else { res.status(500).send({ message: `Произошла ошибка ${err.name}` }); }
     });
 };
