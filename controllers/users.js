@@ -40,7 +40,12 @@ const getUser = (req, res) => {
         });
       }
     })
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err.name}` }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Пользователь по указанному _id не найден' });
+      }
+      res.status(500).send({ message: `Произошла ошибка ${err.name}` });
+    });
 };
 
 const createUser = (req, res) => {
@@ -64,7 +69,7 @@ const createUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  let { name, about } = req.body;
+  const { name, about } = req.body;
   if (typeof name === 'undefined') {
     if (about.length > 31 || about.length <= 1) {
       res.status(400).send({ message: 'Введены некорректные данные' });
