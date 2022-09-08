@@ -83,11 +83,6 @@ const updateProfile = (req, res) => {
           avatar,
           _id,
         } = user;
-        if (typeof name === 'undefined') {
-          name = user.name;
-        } else {
-          about = user.about;
-        }
         res.send({
           data: {
             name, about, avatar, _id,
