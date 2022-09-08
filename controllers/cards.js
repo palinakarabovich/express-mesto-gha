@@ -47,7 +47,7 @@ const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (card === null) {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
+        res.status(400).send({ message: 'Карточка с указанным _id не найдена' });
       } else {
         const {
           likes,
@@ -71,7 +71,7 @@ const likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (card === null) {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
+        res.status(400).send({ message: 'Карточка с указанным _id не найдена' });
       } else {
         const {
           likes,
@@ -99,7 +99,7 @@ const dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (card === null) {
-        res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
+        res.status(400).send({ message: 'Карточка с указанным _id не найдена' });
       } else {
         const {
           likes,

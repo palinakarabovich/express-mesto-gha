@@ -65,6 +65,15 @@ const createUser = (req, res) => {
 
 const updateProfile = (req, res) => {
   const { name, about } = req.body;
+  if (typeof name === 'undefined') {
+    if (about.length > 31 || about.length <= 1) {
+      res.status(400).send({ message: 'Введены некорректные данные' });
+      return;
+    }
+  } else if (name.length > 31 || name.length <= 1) {
+    res.status(400).send({ message: 'Введены некорректные данные' });
+    return;
+  }
   User.findByIdAndUpdate(req.user._id, { name, about })
     .then((user) => {
       if (user === null) {
@@ -73,6 +82,8 @@ const updateProfile = (req, res) => {
         const {
           avatar,
           _id,
+          name,
+          about
         } = user;
         res.send({
           data: {
