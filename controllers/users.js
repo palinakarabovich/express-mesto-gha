@@ -25,7 +25,7 @@ const getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
-        res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
+        res.status(400).send({ message: 'Пользователь по указанному _id не найден' });
       } else {
         const {
           name,
@@ -64,7 +64,7 @@ const createUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  const { name, about } = req.body;
+  let { name, about } = req.body;
   if (typeof name === 'undefined') {
     if (about.length > 31 || about.length <= 1) {
       res.status(400).send({ message: 'Введены некорректные данные' });
@@ -82,9 +82,12 @@ const updateProfile = (req, res) => {
         const {
           avatar,
           _id,
-          name,
-          about
         } = user;
+        if (typeof name === 'undefined') {
+          name = user.name;
+        } else {
+          about = user.about;
+        }
         res.send({
           data: {
             name, about, avatar, _id,
