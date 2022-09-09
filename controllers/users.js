@@ -50,7 +50,10 @@ const updateProfile = (req, res) => {
     res.status(400).send({ message: 'Введены некорректные данные' });
     return;
   }
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
+    new: true,
+    runValidators: true,
+  })
     .then((user) => {
       if (user === null) {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
@@ -67,21 +70,15 @@ const updateProfile = (req, res) => {
 
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
+    new: true,
+    runValidators: true,
+  })
     .then((user) => {
       if (user === null) {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       } else {
-        const {
-          name,
-          about,
-          _id,
-        } = user;
-        res.send({
-          data: {
-            name, about, avatar, _id,
-          },
-        });
+        res.send(user);
       }
     })
     .catch((err) => {
