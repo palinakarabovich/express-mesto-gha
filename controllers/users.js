@@ -3,20 +3,7 @@ const User = require('../models/user');
 const getAllUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.send(users.map((user) => {
-        const {
-          name,
-          about,
-          avatar,
-          _id,
-        } = user;
-        return {
-          name,
-          about,
-          avatar,
-          _id,
-        };
-      }));
+      res.send(users);
     })
     .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err.name}` }));
 };
@@ -27,24 +14,15 @@ const getUser = (req, res) => {
       if (user === null) {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       } else {
-        const {
-          name,
-          about,
-          avatar,
-          _id,
-        } = user;
-        res.send({
-          data: {
-            name, about, avatar, _id,
-          },
-        });
+        res.send(user);
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для поиска пользователя' });
+      } else {
+        res.status(500).send({ message: `Произошла ошибка ${err.name}` });
       }
-      res.status(500).send({ message: `Произошла ошибка ${err.name}` });
     });
 };
 
@@ -52,14 +30,7 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => {
-      const {
-        _id,
-      } = user;
-      res.send({
-        data: {
-          name, about, avatar, _id,
-        },
-      });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -84,15 +55,7 @@ const updateProfile = (req, res) => {
       if (user === null) {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       } else {
-        const {
-          avatar,
-          _id,
-        } = user;
-        res.send({
-          data: {
-            name, about, avatar, _id,
-          },
-        });
+        res.send(user);
       }
     })
     .catch((err) => {
