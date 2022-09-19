@@ -26,21 +26,21 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  const removeCard = () => {
+    Card.findByIdAndRemove(req.params.cardId)
+      .then((card) => res.send(card))
+      .catch(next);
+  };
+
+  Card.findById(req.params.cardId)
     .then((card) => {
-      if (String(card.owner) !== String(req.user._id)) {
-        throw new NoRightsError('Недостаточно прав для удаления');
-      } if (!card) {
-        throw new NotFoundError('Карточки не существует');
-      } return res.send(card);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные id карточки'));
-      } else {
-        next(err);
+      if (!card) next(new NotFoundError('Карточки не существует'));
+      if (req.user._id === card.owner.toString()) {
+        return removeCard();
       }
-    });
+      return next(new NoRightsError('Нельзя удалить чужую карточку'));
+    })
+    .catch(next);
 };
 
 const likeCard = (req, res, next) => {
