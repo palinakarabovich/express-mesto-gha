@@ -89,10 +89,10 @@ const updateProfile = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('Некорректные данные для поиска пользователя'));
-      } else if (err.code === 11000) {
-        next(new UserExistError('Пользователь с таким email уже существует'));
-      } else { next(err); }
+        return next(new ValidationError('Некорректные данные для поиска пользователя'));
+      } if (err.code === 11000) {
+        return next(new UserExistError('Пользователь с таким email уже существует'));
+      } return next(err);
     });
 };
 
