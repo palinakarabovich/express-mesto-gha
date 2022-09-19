@@ -7,15 +7,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'Жак-Ив Кусто',
     required: true,
-    minlength: 2,
-    maxlength: 30,
+    minlength: [2, 'имя пользователя не может быть короче двух символов'],
+    maxlength: [30, 'имя пользователя не может быть длиннее 30 символов'],
   },
   about: {
     type: String,
     default: 'Исследователь',
     required: true,
-    minlength: 2,
-    maxlength: 30,
+    minlength: [2, 'информация о пользователе не может быть короче двух символов'],
+    maxlength: [30, 'информация о пользователе не может быть длиннее 30 символов'],
   },
   avatar: {
     type: String,
@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
+    minlength: [8, 'пароль не может быть короче восьми символов'],
     select: false,
   },
 });
