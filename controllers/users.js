@@ -90,7 +90,7 @@ const updateProfile = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError('Некорректные данные для поиска пользователя'));
-      } else if (err.name === 'MongoError' && err.code === 11000) {
+      } else if (err.code === 11000) {
         next(new UserExistError('Пользователь с таким email уже существует'));
       } else { next(err); }
     });

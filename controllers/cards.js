@@ -29,12 +29,11 @@ const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (String(card.owner) !== String(req.user._id)) {
-        next(new NoRightsError('Недостаточно прав для удаления'));
-      } else if (card === null) {
-        next(new NotFoundError('Карточка с указанным _id не найдена'));
-      } else {
-        res.send(card);
+        return next(new NoRightsError('Недостаточно прав для удаления'));
+      } if (!card) {
+        return next(new NotFoundError('Карточка с указанным _id не найдена'));
       }
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
