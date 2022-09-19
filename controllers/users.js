@@ -43,32 +43,35 @@ const findCurrentUser = (req, res, next) => {
 
 const createUser = (req, res, next) => {
   const {
-    name, about, avatar, email,
+    name, about, avatar, email, password,
   } = req.body;
-  bcrypt.hash(req.body.password, 10)
-    .then((hash) => {
-      User.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      })
-        .then((user) => {
-          res.send({
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            email: user.email,
-          });
-        })
-        .catch((err) => {
-          if (err.name === 'ValidationError') {
-            next(new ValidationError(`Некорректные данные для создания пользователя: ${err.message}`));
-          } else { next(err); }
-        });
+
+  return bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => {
+      res.status(201).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === 11000) {
+        return next(new UserExistError('Нельзя использовать эмейл повторно'));
+      }
+      if (err.name === 'ValidationError') {
+        return next(new ValidationError(`Некорректные данные для создания пользователя ${err.message}`));
+      }
+      return next(err);
+    });
 };
 
 const updateProfile = (req, res, next) => {
@@ -87,8 +90,6 @@ const updateProfile = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new ValidationError('Некорректные данные для поиска пользователя'));
-      } if (err.code === 11000) {
-        return next(new UserExistError('Пользователь с таким email уже существует'));
       } return next(err);
     });
 };
