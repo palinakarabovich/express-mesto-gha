@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const getAllUsers = (req, res) => {
@@ -26,11 +28,40 @@ const getUser = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+const findCurrentUser = (req, res) => {
+  User.findById(req.user._id)
     .then((user) => {
-      res.send(user);
+      if (user === null) {
+        res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
+      } else {
+        res.send(user);
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные для поиска пользователя' });
+      } else {
+        res.status(500).send({ message: `Произошла ошибка ${err.name}` });
+      }
+    });
+};
+
+const createUser = (req, res) => {
+  const {
+    name, about, avatar, email,
+  } = req.body;
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => {
+      User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+        .then((user) => {
+          res.send(user);
+        });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -84,7 +115,22 @@ const updateAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
-      } else { res.status(500).send({ message: `Произошла ошибка ${err.name}` }); }
+      } else { res.status(500).send({ message: `Произошла ошибка ${err.name} ` }); }
+    });
+};
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key');
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
     });
 };
 
@@ -94,4 +140,6 @@ module.exports = {
   createUser,
   updateProfile,
   updateAvatar,
+  login,
+  findCurrentUser,
 };

@@ -1,8 +1,14 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routerUsers = require('./routers/users');
 const routerCards = require('./routers/cards');
+const {
+  login, createUser,
+} = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 
@@ -15,16 +21,11 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '631875c7ae6eb1cf7cdec697',
-  };
+app.post('/signin', login);
+app.post('/signup', createUser);
 
-  next();
-});
-
-app.use('/users', routerUsers);
-app.use('/cards', routerCards);
+app.use('/users', auth, routerUsers);
+app.use('/cards', auth, routerCards);
 app.patch('*', (req, res) => {
   res.status(404).send({ message: 'URL  не сущетсвует' });
 });
