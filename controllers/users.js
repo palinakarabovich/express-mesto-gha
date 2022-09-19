@@ -12,22 +12,19 @@ const getAllUsers = (req, res, next) => {
     })
     .catch(next);
 };
-
 const getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
-      if (user === null) {
-        next(new NotFoundError('Пользователь не найден'));
-      } else {
-        res.send(user);
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
       }
+      return res.status(200).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new ValidationError('Некорректные данные для поиска пользователя'));
-      } else {
-        next(err);
+      if (err.kind === 'ObjectId') {
+        return next(new ValidationError('Некорректные данные для поиска пользователя'));
       }
+      return next(err);
     });
 };
 
