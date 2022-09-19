@@ -1,10 +1,12 @@
-require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const routerUsers = require('./routers/users');
 const routerCards = require('./routers/cards');
+const NotFoundError = require('./errors/NotFoundError');
+const errorHandler = require('./errors/errorHandler');
+
 const {
   login, createUser,
 } = require('./controllers/users');
@@ -26,10 +28,11 @@ app.post('/signup', createUser);
 
 app.use('/users', auth, routerUsers);
 app.use('/cards', auth, routerCards);
-app.patch('*', (req, res) => {
-  res.status(404).send({ message: 'URL  не сущетсвует' });
+app.all('*', (req, res, next) => {
+  next(new NotFoundError('Страницы не существует'));
 });
-
+app.use(errors());
+app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
