@@ -48,16 +48,14 @@ const likeCard = (req, res, next) => {
     .then((card) => {
       if (card === null) {
         return next(
-          new NotFoundError(
-            'Запрашиваемая карточка для добавления лайка не найдена',
-          ),
+          new NotFoundError('Запрашиваемая карточка для добавления лайка не найдена'),
         );
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные id карточки'));
+        next(new ValidationError('Переданы некорректные данные карточки'));
       } else next(err);
     });
 };
@@ -67,16 +65,14 @@ const dislikeCard = (req, res, next) => {
     .then((card) => {
       if (card === null) {
         return next(
-          new NotFoundError(
-            'Запрашиваемая карточка для удаления лайка не найдена',
-          ),
+          new NotFoundError('Запрашиваемая карточка для удаления лайка не найдена'),
         );
       }
       return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('Переданы некорректные данные id карточки'));
+        next(new ValidationError('Переданы некорректные данные карточки'));
       } else next(err);
     });
 };

@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => validator.isURL(v),
-      message: 'Неверный формат ссылки',
+      message: 'неверный формат ссылки',
     },
   },
   email: {
@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: (v) => validator.isEmail(v),
-      message: 'Неверный формат эмейла',
+      message: 'неверный формат эмейла',
     },
   },
   password: {
@@ -50,13 +50,13 @@ userSchema.statics.findUserByCredentials = function (email, password) {
     .then((user) => {
       if (!user) {
         return Promise.reject(
-          new AuthError('Неправильные почта или пароль'),
+          new AuthError('неправильные почта или пароль'),
         );
       }
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
           return Promise.reject(
-            new AuthError('Неправильные почта или пароль'),
+            new AuthError('неправильные почта или пароль'),
           );
         }
         return user;
