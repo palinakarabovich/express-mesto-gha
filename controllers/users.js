@@ -16,16 +16,11 @@ const getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        next(new NotFoundError('Пользователь не найден'));
       }
-      return res.status(200).send({ data: user });
+      return res.send(user);
     })
-    .catch((err) => {
-      if (err.kind === 'ObjectId') {
-        return next(new ValidationError('Некорректные данные для поиска пользователя'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
 const findCurrentUser = (req, res, next) => {
