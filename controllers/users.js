@@ -16,7 +16,7 @@ const getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь не найден'));
+        return next(new NotFoundError('Пользователь не найден'));
       }
       return res.send(user);
     })
@@ -119,7 +119,7 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key');
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
     .catch(next);

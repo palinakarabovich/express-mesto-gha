@@ -34,7 +34,7 @@ const deleteCard = (req, res, next) => {
 
   Card.findById(req.params.cardId)
     .then((card) => {
-      if (!card) next(new NotFoundError('Карточки не существует'));
+      if (!card) return next(new NotFoundError('Карточки не существует'));
       if (req.user._id === card.owner.toString()) {
         return removeCard();
       }
