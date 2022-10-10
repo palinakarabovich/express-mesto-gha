@@ -6,8 +6,11 @@ const routerUsers = require('./routers/users');
 const routerCards = require('./routers/cards');
 const NotFoundError = require('./errors/NotFoundError');
 const errorHandler = require('./errors/errorHandler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const regEx = require('./constants/constants');
+
+require('dotenv').config();
 
 const {
   login, createUser,
@@ -24,6 +27,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+app.use(requestLogger);
 
 app.post(
   '/signin',
@@ -54,6 +59,7 @@ app.use('/cards', auth, routerCards);
 app.all('*', auth, (req, res, next) => {
   next(new NotFoundError('Страницы не существует'));
 });
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 app.listen(PORT, () => {
