@@ -10,8 +10,6 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const regEx = require('./constants/constants');
 
-require('dotenv').config();
-
 const {
   login, createUser,
 } = require('./controllers/users');
